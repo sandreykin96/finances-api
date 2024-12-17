@@ -1,0 +1,31 @@
+version: '3.4'
+
+networks:
+  ndsapi-dev:
+    driver: bridge
+
+services:
+ Finances.api:
+    image: ${DOCKER_REGISTRY-}financesapi
+    depends_on:
+      - "postgres_image"
+    build:
+      context: .
+      dockerfile:Finances.Api/Dockerfile
+    ports:
+      - "5000:443" 
+    environment:
+      - DBCONNECTION=Host=postgres_image;Database=esf;Username=esf;Password=secret
+    networks:
+      - ndsapi-dev
+  postgres_image:
+    image: postgres:11.4
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: "esf"
+      POSTGRES_PASSWORD: "secret"
+      POSTGRES_DB: "esf"
+    networks:
+      - ndsapi-dev
